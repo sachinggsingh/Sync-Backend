@@ -1,52 +1,74 @@
-# SyncEditor Server
+# 🚀 SyncEditor Server
 
-Backend server for the SyncEditor collaborative code editor platform.
+<p align="center">
+  <img src="https://img.shields.io/badge/node.js-v18+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node Version" />
+  <img src="https://img.shields.io/badge/express-v4.18-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express Version" />
+  <img src="https://img.shields.io/badge/socket.io-v4.7-black?style=for-the-badge&logo=socketdotio&logoColor=white" alt="Socket.io Version" />
+  <img src="https://img.shields.io/badge/opentelemetry-observability-blueviolet?style=for-the-badge&logo=opentelemetry&logoColor=white" alt="OTel" />
+  <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="License" />
+</p>
 
-## Overview
+Backend server for the **SyncEditor** collaborative code editor platform. Built for performance, security, and real-time synchronization.
 
-This is a Node.js/Express server that provides real-time collaboration features using Socket.IO. It handles room management, user connections, code synchronization, and chat messaging.
+---
 
-## Features
+## 📖 Overview
 
-- **Real-Time WebSocket Communication** using Socket.IO
-- **Room Management** with unique room IDs
-- **User Session Tracking** with connection state management
-- **Code Synchronization** with debounced updates
-- **Chat Messaging** with validation and sanitization
-- **Security Middleware** including Helmet, CORS, and rate limiting
-- **Input Validation** for all user-generated content
-- **Health Check Endpoint** for monitoring
+SyncEditor Server is a high-performance Node.js service providing the backbone for real-time collaboration. It leverages Socket.IO for low-latency communication and integrated OpenTelemetry for production-grade observability.
 
-## Monitoring & Observability
+## ✨ Features
 
-The SyncEditor Server is integrated with **OpenTelemetry** for full-stack observability.
+- ⚡ **Real-Time Sync**: Low-latency code and chat synchronization.
+- 🏢 **Room Management**: Secure, isolated collaborative environments.
+- 🛡️ **Production Security**: Rate limiting, XSS protection, and CSP headers.
+- 🔍 **First-Class Observability**: Distributed tracing with Jaeger v2.
+- 🧪 **Clerk Auth**: Seamless integration with Clerk for user management.
 
-### Traces
-Distributed tracing is handled via OpenTelemetry and visualized in **Jaeger v2**. This allows you to track the lifecycle of socket events and API requests across the system.
+---
 
-![Trace Visualization Example](./assets/trace_example.png)
-*Example: Tracing a `join` event through the backend.*
+## 📊 Monitoring & Observability
 
-### Logs
-Structured logging is implemented using `winston` and automatically exported to the OpenTelemetry collector.
+Standardized observability using **OpenTelemetry** and **Jaeger v2**.
 
-## Future Roadmap
+### 🔍 Distributed Tracing
+Visualize the entire lifecycle of collaborative events.
 
-- [ ] **Distributed Metrics**: Implement Prometheus & Grafana for real-time performance monitoring.
-- [ ] **Enhanced Log Aggregation**: Advanced filtering and search for structured logs.
-- [ ] **Custom Spans**: Add granular instrumentation for complex business logic.
-- [ ] **Health Dashboard**: A visual representation of server health and resource usage.
+<div align="center">
+  <img src="./assets/Screenshot 2026-03-07 at 4.35.44 PM.png" alt="Trace 1" width="900" />
+  <br><i>System interaction visualization and latency analysis.</i>
+  <br><br>
+  <img src="./assets/Screenshot 2026-03-07 at 4.36.42 PM.png" alt="Trace 2" width="900" />
+  <br><i>Deep dive into span processing and event execution.</i>
+  <br><br>
+  <img src="./assets/Screenshot 2026-03-07 at 4.37.29 PM.png" alt="Trace 3" width="900" />
+  <br><i>Real-time collaboration concurrency tracking.</i>
+</div>
 
-## Installation
+### 📝 Structured Logs
+Powered by `winston` and exported via OTLP for centralized log management.
 
+---
+
+## 🛠️ Tech Stack
+
+- **Runtime**: [Node.js](https://nodejs.org/) (v18+)
+- **Framework**: [Express.js](https://expressjs.com/)
+- **Real-time**: [Socket.IO](https://socket.io/)
+- **Auth**: [Clerk](https://clerk.com/)
+- **Observability**: [OpenTelemetry](https://opentelemetry.io/) & [Jaeger](https://www.jaegertracing.io/)
+- **Logging**: [Winston](https://github.com/winstonjs/winston)
+
+---
+
+## 🚀 Quick Start
+
+### 1. Installation
 ```bash
 npm install
 ```
 
-## Configuration
-
-Create a `.env` file in the root directory:
-
+### 2. Configuration
+Create a `.env` file:
 ```env
 PORT=5555
 FRONTEND_URL=http://localhost:5173
@@ -55,171 +77,56 @@ SOCKET_PING_TIMEOUT=120000
 SOCKET_PING_INTERVAL=30000
 ```
 
-## Running the Server
+### 3. Execution
+| Command | Description |
+| :--- | :--- |
+| `npm run dev` | Start development server with Nodemon |
+| `npm start` | Run production-ready server |
 
-### Development Mode
-```bash
-npm run dev
-```
+---
 
-### Production Mode
-```bash
-npm start
-```
+## 🔌 Socket.IO API
 
-## API Endpoints
+### 📤 Outgoing (Client → Server)
+- `join`: `{ roomId, username }`
+- `leave`: `{ roomId, username }`
+- `code-change`: `{ roomId, code, sender }`
+- `send-message`: `{ roomId, message, sender, time }`
 
-### Health Check
-```
-GET /health
-```
-Returns server status and timestamp.
+### 📥 Incoming (Server → Client)
+- `user-joined`: `{ clients, username, socketId }`
+- `user-left`: `{ socketId, username }`
+- `code-change`: `{ code, sender }`
+- `receive-message`: `{ message, sender, time }`
+- `error`: `{ message }`
 
-## Socket.IO Events
+---
 
-### Client → Server
+## 🏗️ Architecture
 
-#### `join`
-Join a room with username and room ID.
-```javascript
-socket.emit('join', { roomId, username });
-```
-
-#### `leave`
-Leave the current room.
-```javascript
-socket.emit('leave', { roomId, username });
-```
-
-#### `code-change`
-Send code changes to other users in the room.
-```javascript
-socket.emit('code-change', { roomId, code, sender });
-```
-
-#### `send-message`
-Send a chat message to the room.
-```javascript
-socket.emit('send-message', { roomId, message, sender, time });
-```
-
-### Server → Client
-
-#### `user-joined`
-Notifies when a user joins the room.
-```javascript
-socket.on('user-joined', ({ clients, username, socketId }) => {
-  // Handle user joined
-});
-```
-
-#### `user-left`
-Notifies when a user leaves the room.
-```javascript
-socket.on('user-left', ({ socketId, username }) => {
-  // Handle user left
-});
-```
-
-#### `user-disconnected`
-Notifies when a user disconnects.
-```javascript
-socket.on('user-disconnected', ({ socketId, username }) => {
-  // Handle user disconnected
-});
-```
-
-#### `code-change`
-Receives code changes from other users.
-```javascript
-socket.on('code-change', ({ code, sender }) => {
-  // Update editor with new code
-});
-```
-
-#### `receive-message`
-Receives chat messages.
-```javascript
-socket.on('receive-message', ({ message, sender, time }) => {
-  // Display message in chat
-});
-```
-
-#### `error`
-Receives error messages from server.
-```javascript
-socket.on('error', ({ message }) => {
-  // Handle error
-});
-```
-
-## Security
-
-### Validation Rules
-
-- **Room ID**: 3-100 alphanumeric characters, hyphens, underscores
-- **Room Capacity**: Maximum 5 members per room
-- **Username**: 2-30 characters, HTML entities escaped
-- **Message**: 1-1000 characters, HTML entities escaped
-- **Code**: Maximum 100KB
-
-### Rate Limiting
-
-- **API Endpoints**: 100 requests per 15 minutes per IP
-- **Room Operations**: 10 requests per minute per IP
-
-### Security Headers
-
-Helmet.js provides:
-- Content Security Policy
-- XSS Protection
-- No Sniff
-- Frameguard
-- HSTS
-
-## Architecture
-
-```
+```text
 Server/
-├── app.js              # Main server file
-├── middleware/
-│   ├── rateLimiter.js  # Rate limiting configuration
-│   └── validator.js    # Input validation functions
-├── .env.example        # Environment variables template
+├── src/
+│   ├── app.js          # Core Express application
+│   ├── index.js        # Entry point & OTel init
+│   ├── config/         # OTel & Middleware configs
+│   ├── middleware/     # Security & Validation
+│   ├── sockets/        # Socket.IO handlers
+│   └── utils/          # Logging & Helpers
 └── package.json
 ```
 
-## Dependencies
+---
 
-- **express**: Web framework
-- **socket.io**: Real-time communication
-- **helmet**: Security middleware
-- **compression**: Response compression
-- **cors**: Cross-origin resource sharing
-- **validator**: Input validation
-- **express-rate-limit**: Rate limiting
-- **dotenv**: Environment configuration
+## 🛡️ Security
+- **Rate Limiting**: 100 req/15min per IP.
+- **Validation**: Strict schema validation for all inputs.
+- **Headers**: Helmet-secured headers (XSS, HSTS, CSP).
 
-## Development Dependencies
+## 🗺️ Roadmap
+- [ ] Distributed Metrics (Prometheus/Grafana)
+- [ ] Health Dashboard UI
+- [ ] Custom Performance Spans
 
-- **nodemon**: Auto-restart on file changes
-
-## Performance Considerations
-
-- Code changes are debounced on the client side
-- Compression middleware reduces bandwidth
-- Socket.IO transports: WebSocket (preferred), polling (fallback)
-- Ping timeout: 120 seconds
-- Ping interval: 30 seconds
-
-## Error Handling
-
-All socket event handlers include try-catch blocks and emit error events to clients when validation fails or exceptions occur.
-
-## Monitoring
-
-Use the `/health` endpoint for uptime monitoring and load balancer health checks.
-
-## License
-
-MIT
+## ⚖️ License
+Distributed under the MIT License. See `LICENSE` for more information.
