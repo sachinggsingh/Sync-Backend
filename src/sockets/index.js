@@ -1,6 +1,6 @@
 const { Server } = require('socket.io');
-const { verifyClerkToken } = require('./middleware/clerkAuth');
-const { registerHandlers } = require('./socketHandlers');
+const { verifyClerkToken } = require('../middleware/auth');
+const { registerHandlers } = require('./handlers');
 
 let io;
 

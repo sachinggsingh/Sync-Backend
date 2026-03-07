@@ -1,4 +1,4 @@
-const { validateRoomId, validateUsername, validateMessage, validateCode } = require('./middleware/validator');
+const { validateRoomId, validateUsername, validateMessage, validateCode } = require('../middleware/validator');
 const { trace, SpanStatusCode } = require("@opentelemetry/api")
 const userSocketMap = {};
 

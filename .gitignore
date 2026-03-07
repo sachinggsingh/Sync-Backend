@@ -57,3 +57,6 @@ out/
 .temp/
 .tmp/
 temp/
+
+# K8's
+K8s/
