@@ -17,6 +17,26 @@ This is a Node.js/Express server that provides real-time collaboration features 
 - **Input Validation** for all user-generated content
 - **Health Check Endpoint** for monitoring
 
+## Monitoring & Observability
+
+The SyncEditor Server is integrated with **OpenTelemetry** for full-stack observability.
+
+### Traces
+Distributed tracing is handled via OpenTelemetry and visualized in **Jaeger v2**. This allows you to track the lifecycle of socket events and API requests across the system.
+
+![Trace Visualization Example](./assets/trace_example.png)
+*Example: Tracing a `join` event through the backend.*
+
+### Logs
+Structured logging is implemented using `winston` and automatically exported to the OpenTelemetry collector.
+
+## Future Roadmap
+
+- [ ] **Distributed Metrics**: Implement Prometheus & Grafana for real-time performance monitoring.
+- [ ] **Enhanced Log Aggregation**: Advanced filtering and search for structured logs.
+- [ ] **Custom Spans**: Add granular instrumentation for complex business logic.
+- [ ] **Health Dashboard**: A visual representation of server health and resource usage.
+
 ## Installation
 
 ```bash
@@ -199,22 +219,6 @@ All socket event handlers include try-catch blocks and emit error events to clie
 ## Monitoring
 
 Use the `/health` endpoint for uptime monitoring and load balancer health checks.
-
-## Deployment
-
-### Environment Variables
-
-Ensure the following are set in production:
-- `NODE_ENV=production`
-- `PORT` (cloud providers often set this)
-- `FRONTEND_URL` (your deployed frontend URL)
-
-### Scaling
-
-For horizontal scaling:
-- Use Socket.IO Redis adapter
-- Configure sticky sessions on load balancer
-- Use a managed Redis instance (AWS ElastiCache, Redis Cloud, etc.)
 
 ## License
 

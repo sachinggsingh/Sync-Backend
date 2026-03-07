@@ -14,9 +14,14 @@
     "@clerk/clerk-sdk-node": "^4.13.23",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/auto-instrumentations-node": "^0.71.0",
-    "@opentelemetry/sdk-metrics": "^2.6.0",
-    "@opentelemetry/sdk-node": "^0.213.0",
-    "@opentelemetry/sdk-trace-node": "^2.6.0",
+    "@opentelemetry/exporter-logs-otlp-http": "^0.57.2",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.57.2",
+    "@opentelemetry/resources": "^1.30.1",
+    "@opentelemetry/sdk-metrics": "^1.30.1",
+    "@opentelemetry/sdk-node": "^0.57.2",
+    "@opentelemetry/sdk-trace-node": "^1.30.1",
+    "@opentelemetry/semantic-conventions": "^1.30.0",
+    "@opentelemetry/winston-transport": "^0.10.0",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
@@ -25,7 +30,8 @@
     "helmet": "^8.1.0",
     "socket.io": "^4.7.4",
     "socket.io-client": "^4.7.4",
-    "validator": "^13.15.23"
+    "validator": "^13.15.23",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

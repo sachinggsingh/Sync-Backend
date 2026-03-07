@@ -1,5 +1,5 @@
-require('./config/otel'); // Initialize OpenTelemetry
 require('dotenv').config();
+require('./config/otel'); // Initialize OpenTelemetry
 const { server } = require('./app');
 
 const PORT = process.env.PORT || 5555;
