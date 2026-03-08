@@ -1,4 +1,4 @@
-const { createClerkClient } = require('@clerk/clerk-sdk-node');
+const { createClerkClient } = require('@clerk/express');
 
 const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY;
 const CLERK_PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY;

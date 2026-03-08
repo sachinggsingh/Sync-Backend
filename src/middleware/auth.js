@@ -1,10 +1,8 @@
-const { ClerkExpressRequireAuth } = require('@clerk/clerk-sdk-node');
+const { requireAuth } = require('@clerk/express');
 const { clerkClient } = require('../config/clerk');
 
-/**
- * Middleware to verify Clerk authentication tokens from Socket.IO connections
- * Extracts the token from socket handshake auth and validates it
- */
+// Middleware to verify Clerk authentication tokens from Socket.IO connections
+// Extracts the token from socket handshake auth and validates it
 const verifyClerkToken = async (socket, next) => {
     try {
         console.log(`[Auth] New connection attempt: ${socket.id}`);
@@ -40,10 +38,8 @@ const verifyClerkToken = async (socket, next) => {
     }
 };
 
-/**
- * Optional: Express middleware for HTTP routes (if needed)
- */
-const clerkExpressAuth = ClerkExpressRequireAuth();
+// Optional: Express middleware for HTTP routes (if needed)
+const clerkExpressAuth = requireAuth();
 
 module.exports = {
     verifyClerkToken,

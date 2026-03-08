@@ -1,12 +1,7 @@
 const winston = require("winston");
 const { OpenTelemetryTransportV3 } = require("@opentelemetry/winston-transport");
 
-const colors = [
-    'info',
-    'error',
-    'warn',
-    'debug',
-]
+
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
     transports: [
