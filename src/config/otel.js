@@ -4,11 +4,12 @@ const { OTLPTraceExporter } = require("@opentelemetry/exporter-trace-otlp-http")
 const { AlwaysOnSampler } = require("@opentelemetry/sdk-trace-node")
 const { BatchLogRecordProcessor } = require("@opentelemetry/sdk-logs");
 const { OTLPLogExporter } = require("@opentelemetry/exporter-logs-otlp-http");
+const { WinstonInstrumentation } = require("@opentelemetry/winston-transport");
 // Note: PeriodicExportingMetricReader and OTLPMetricExporter simplified for version compatibility
 // If metrics are required, ensure versions of sdk-node and sdk-metrics are compatible.
 
 const sdk = new NodeSDK({
-    instrumentations: [getNodeAutoInstrumentations()],
+    instrumentations: [getNodeAutoInstrumentations(), new WinstonInstrumentation()],
     traceExporter: new OTLPTraceExporter(),
     sampler: new AlwaysOnSampler(),
     serviceName: process.env.OTEL_SERVICE_NAME || 'sync-server',

@@ -1,45 +1,23 @@
-const winston = require("winston");
-const { OpenTelemetryTransportV3 } = require("@opentelemetry/winston-transport");
-
+const winston = require('winston');
+const { trace } = require('@opentelemetry/api');
 
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
-    transports: [
-        new winston.transports.Console({
-            format: winston.format.combine(
-                winston.format.colorize({ all: process.env.COLORIZE_LOGS === 'true' }),
-                winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-                winston.format.printf(({ timestamp, level, message, ...meta }) => {
-                    return `${timestamp} [${level}]: ${message} ${Object.keys(meta).length ? JSON.stringify(meta) : ''}`;
-                })
-            )
-        }),
-        new OpenTelemetryTransportV3({
-            format: winston.format.combine(
-                winston.format.timestamp(),
-                winston.format.json()
-            )
-        }),
-    ],
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format((info) => {
+            // OpenTelemetry auto-injects trace context
+            const span = trace.getActiveSpan();
+            if (span) {
+                const spanContext = span.spanContext();
+                info.trace_id = spanContext.traceId;
+                info.span_id = spanContext.spanId;
+            }
+            return info;
+        })(),
+        winston.format.json()
+    ),
+    transports: [new winston.transports.Console()]
 });
 
-function logWithTraceInfo(msg, level = 'info') {
-    logger.log({ level, message: msg });
-}
-function logWithTraceError(msg, level = 'error') {
-    logger.error({ level, message: msg })
-}
-function logWithTraceWarn(msg, level = 'warn') {
-    logger.warn({ level, message: msg })
-}
-function logWithTraceDebug(msg, level = 'debug') {
-    logger.debug({ level, message: msg })
-}
-
-module.exports = {
-    logger,
-    logWithTraceInfo,
-    logWithTraceError,
-    logWithTraceWarn,
-    logWithTraceDebug
-};
+module.exports = logger;
