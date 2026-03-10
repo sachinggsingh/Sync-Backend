@@ -71,7 +71,7 @@ const validateMessage = (message) => {
 /**
  * Validates code content
  * @param {string} code - Code to validate
- * @returns {Object} - {isValid: boolean, error: string}
+ * @returns {Object} - {isValid: boolean, sanitized: string, error: string}
  */
 const validateCode = (code) => {
     if (typeof code !== 'string') {
@@ -83,7 +83,7 @@ const validateCode = (code) => {
         return { isValid: false, error: 'Code is too large (max 100KB)' };
     }
 
-    return { isValid: true };
+    return { isValid: true, sanitized: code };
 };
 
 module.exports = {
