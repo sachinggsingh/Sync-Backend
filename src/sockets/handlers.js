@@ -21,8 +21,27 @@ const registerHandlers = (io, socket) => {
         roomId: Array.from(socket.rooms)
     })
 
+    // helper that makes sure a socket was successfully authenticated
+    // during the handshake.  When `authError` is set we emit a dedicated
+    // event and return false so callers can early‑exit.
+    const ensureAuth = (ctx) => {
+        if (socket.authError) {
+            // If an event handler passed context information we include it
+            // in the log entry for debugging.
+            logger.warn('Unauthenticated socket event', {
+                socketId: socket.id,
+                error: socket.authError,
+                context: ctx || {}
+            });
+            socket.emit('auth-error', { message: socket.authError });
+            return false;
+        }
+        return true;
+    };
+
     // Handle joining room
     socket.on('join', ({ roomId, username }) => {
+        if (!ensureAuth({event: 'join', roomId, username})) return;
         tracer.startActiveSpan("join", (span) => {
             try {
                 span.setAttribute("socket.id", socket.id);
@@ -110,6 +129,7 @@ const registerHandlers = (io, socket) => {
 
     // Handle code changes
     socket.on('code-change', ({ roomId, code, sender }) => {
+        if (!ensureAuth({event: 'code-change', roomId, sender})) return;
         tracer.startActiveSpan("code-change", (span) => {
             try {
                 span.setAttribute("socket.id", socket.id);
@@ -143,6 +163,7 @@ const registerHandlers = (io, socket) => {
 
     // Handle sync request
     socket.on('sync-code', ({ socketId, code }) => {
+        if (!ensureAuth({event: 'sync-code', targetSocketId: socketId})) return;
         tracer.startActiveSpan("sync-code", (span) => {
             try {
                 span.setAttribute("socket.id", socket.id);
@@ -221,6 +242,7 @@ const registerHandlers = (io, socket) => {
 
     // Handle leaving room
     socket.on('leave', ({ roomId }) => {
+        if (!ensureAuth({event: 'leave', roomId})) return;
         tracer.startActiveSpan("leave", (span) => {
             try {
                 const username = userSocketMap.get(socket.id) || 'Anonymous';
@@ -254,6 +276,7 @@ const registerHandlers = (io, socket) => {
 
     // Handle messages
     socket.on('send-message', ({ roomId, message, sender, time }) => {
+        if (!ensureAuth({event: 'send-message', roomId, sender})) return;
         tracer.startActiveSpan("send-message", (span) => {
             try {
                 span.setAttribute("socket.id", socket.id);
@@ -289,6 +312,7 @@ const registerHandlers = (io, socket) => {
 
     // Handle code execution output sync
     socket.on('code-output', ({ roomId, output, sender }) => {
+        if (!ensureAuth({event: 'code-output', roomId, sender})) return;
         tracer.startActiveSpan("code-output", (span) => {
             try {
                 span.setAttribute("socket.id", socket.id);

@@ -1,5 +1,5 @@
 const { Server } = require('socket.io');
-const { verifyClerkToken } = require('../middleware/auth');
+const { verifyAuth } = require('../middleware/auth');
 const { registerHandlers } = require('./handlers');
 
 let io;
@@ -16,8 +16,8 @@ const initSocket = (server, FRONTEND_URL) => {
         transports: ['websocket', 'polling']
     });
 
-    // Add Clerk authentication middleware to Socket.IO
-    io.use(verifyClerkToken);
+    // Authentication middleware (no-op in simplified version)
+    io.use(verifyAuth);
 
     io.on('connection', (socket) => {
         registerHandlers(io, socket);

@@ -16,13 +16,15 @@ Backend server for the **SyncEditor** collaborative code editor platform. Built 
 
 SyncEditor Server is a high-performance Node.js service providing the backbone for real-time collaboration. It leverages Socket.IO for low-latency communication and integrated OpenTelemetry for production-grade observability.
 
+**Authentication model:** the current implementation is intentionally simple – clients supply a plain username when emitting the `join` event; the server does not perform any credentials check.  This keeps the focus on the collaboration features and makes the service easier to run locally.
+
 ## ✨ Features
 
 - ⚡ **Real-Time Sync**: Low-latency code and chat synchronization.
 - 🏢 **Room Management**: Secure, isolated collaborative environments.
 - 🛡️ **Production Security**: Rate limiting, XSS protection, and CSP headers.
 - 🔍 **First-Class Observability**: Distributed tracing with Jaeger v2.
-- 🧪 **Clerk Auth**: Seamless integration with Clerk for user management.
+- 🧪 **Simple auth**: clients provide a username when joining; no backend login required.
 
 ---
 
@@ -54,7 +56,7 @@ Powered by `winston` and exported via OTLP for centralized log management.
 - **Runtime**: [Node.js](https://nodejs.org/) (v18+)
 - **Framework**: [Express.js](https://expressjs.com/)
 - **Real-time**: [Socket.IO](https://socket.io/)
-- **Auth**: [Clerk](https://clerk.com/)
+- **Auth**: none (naive username-based)
 - **Observability**: [OpenTelemetry](https://opentelemetry.io/) & [Jaeger](https://www.jaegertracing.io/)
 - **Logging**: [Winston](https://github.com/winstonjs/winston)
 

@@ -31,14 +31,10 @@ app.use(express.json());
 // Health check endpoint
 app.get('/health', (req, res) => {
     logger.info('Health Check Started of the Server', {
-        req: req.method(),
-        res: res.statusCode,
         timestamp: new Date().toISOString()
     })
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
     logger.info('Health Check Completed of the Server', {
-        req: req.method(),
-        res: res.statusCode,
         timestamp: new Date().toISOString()
     })
 });

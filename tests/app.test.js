@@ -1,14 +1,7 @@
 const request = require('supertest');
 const { app, server } = require('../src/app');
-const { clerkClient } = require('../src/config/clerk');
 const ioClient = require('socket.io-client');
 
-// Mock Clerk client
-jest.mock('../src/config/clerk', () => ({
-    clerkClient: {
-        verifyToken: jest.fn()
-    }
-}));
 
 // Silence console noise during tests
 beforeAll(() => {
@@ -43,25 +36,15 @@ describe('Server API Tests', () => {
     });
 
     describe('Socket.io Connection', () => {
-        it('should fail connection without token', (done) => {
+        it('should connect without authentication and allow join', (done) => {
             const socket = ioClient(`http://localhost:${port}`);
 
-            socket.on('connect_error', (err) => {
-                expect(err.message).toBe('Authentication required');
-                socket.close();
-                done();
-            });
-        });
-
-        it('should succeed connection with valid token', (done) => {
-            clerkClient.verifyToken.mockResolvedValue({ sub: 'user_123', sid: 'session_123' });
-
-            const socket = ioClient(`http://localhost:${port}`, {
-                auth: { token: 'valid_token' }
-            });
-
             socket.on('connect', () => {
-                expect(socket.connected).toBe(true);
+                socket.emit('join', { roomId: 'room1', username: 'bob' });
+            });
+
+            socket.on('user-joined', (data) => {
+                expect(data).toHaveProperty('clients');
                 socket.close();
                 done();
             });

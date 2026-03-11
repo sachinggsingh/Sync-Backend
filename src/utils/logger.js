@@ -1,5 +1,6 @@
 const winston = require('winston');
 const { trace } = require('@opentelemetry/api');
+const { OpenTelemetryTransportV3 } = require('@opentelemetry/winston-transport');
 
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
@@ -17,7 +18,11 @@ const logger = winston.createLogger({
         })(),
         winston.format.json()
     ),
-    transports: [new winston.transports.Console()]
+    transports: [
+        new winston.transports.Console(),
+        // Ships logs to OTel Collector → Loki → Grafana
+        new OpenTelemetryTransportV3()
+    ]
 });
 
-module.exports = logger;
+module.exports = { logger };
