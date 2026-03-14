@@ -28,6 +28,13 @@ SyncEditor Server is a high-performance Node.js service providing the backbone f
 
 ---
 
+## Flow of the things how it's going on
+
+<div align="center">
+<img src="./assets//Screenshot 2026-03-14 at 3.06.44 PM.png" alt="System representation" width="900"/>
+
+</div>
+
 ## 📊 Monitoring & Observability
 
 Standardized observability using **OpenTelemetry** and **Jaeger v2**.
@@ -57,7 +64,8 @@ Powered by `winston` and exported via OTLP for centralized log management.
 - **Framework**: [Express.js](https://expressjs.com/)
 - **Real-time**: [Socket.IO](https://socket.io/)
 - **Auth**: none (naive username-based)
-- **Observability**: [OpenTelemetry](https://opentelemetry.io/) & [Jaeger](https://www.jaegertracing.io/)
+- **Jaeger**:  [Jaeger](https://www.jaegertracing.io/)
+- **Observability**: [OpenTelemetry](https://opentelemetry.io/) 
 - **Logging**: [Winston](https://github.com/winstonjs/winston)
 
 ---
@@ -126,7 +134,7 @@ Server/
 - **Headers**: Helmet-secured headers (XSS, HSTS, CSP).
 
 ## 🗺️ Roadmap
-- [ ] Distributed Metrics (Prometheus/Grafana)
+- [ ] Distributed Metrics and Logging (Prometheus/Grafana)
 - [ ] Health Dashboard UI
 - [ ] Custom Performance Spans
 
