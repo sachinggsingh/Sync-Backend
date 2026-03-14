@@ -1,3 +1,4 @@
+file_format: '1.0-rc.1'  # Required for SDK/agent declarative config
 receivers:
   otlp:
     protocols:
@@ -14,8 +15,11 @@ exporters:
     endpoint: jaeger:4317
     tls:
       insecure: true
-  otlphttp/loki:
-    endpoint: "http://loki:3100/otlp/v1/logs"
+  loki:
+    endpoint: "http://loki:3100/loki/api/v1/push"
+    default_labels_enabled: true
+    lables:
+      service: "sync-server"
   debug:
     verbosity: basic
 
@@ -32,4 +36,4 @@ service:
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug, otlphttp/loki]
+      exporters: [debug, loki]

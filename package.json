@@ -7,10 +7,10 @@
     "dev": "nodemon src/index.js",
     "test": "jest --detectOpenHandles",
     "lint": "eslint .",
-    "build": "esbuild src/index.js --bundle --platform=node --outfile=dist/index.js --external:fsevents --external:canvas",
+    "build": "esbuild src/index.js --bundle --platform=node --outfile=dist/index.js --external:fsevents --external:canvas --external:snappy --external:@napi-rs/snappy",
     "test:perf": "node tests/perf.js"
   },
-  "author": "",
+  "author": "Sachin Singh",
   "license": "MIT",
   "description": "",
   "dependencies": {
@@ -34,7 +34,8 @@
     "socket.io": "^4.7.4",
     "socket.io-client": "^4.7.4",
     "validator": "^13.15.23",
-    "winston": "^3.19.0"
+    "winston": "^3.19.0",
+    "winston-loki": "^6.1.4"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
