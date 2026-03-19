@@ -1,0 +1,36 @@
+# global:
+  # configure  global settings which impacts all target
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0      # not using any for now 
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+positions:
+  filename: /tmp/positions.yaml
+
+scrape_configs:
+  - job_name: sync-server
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: sync-server
+          __path__: /var/log/sync-server/app.log
+    pipeline_stages:
+      - json:
+          expressions:
+            level: level
+            service: service
+            trace_id: trace_id
+            span_id: span_id
+            message: message
+            timestamp: timestamp
+      - labels:
+          level:
+          service:
+      - timestamp:
+          source: timestamp
+          format: RFC3339

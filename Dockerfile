@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci --ignore-scripts
+RUN npm install --no-audit --no-fund --ignore-scripts
 
 COPY . .
 
@@ -23,6 +23,8 @@ COPY --from=builder --chown=sachin:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=sachin:nodejs /app/package.json ./
 
 ENV NODE_ENV=production
+
+RUN mkdir -p /app/logs && chown -R sachin:nodejs /app
 
 USER sachin
 

@@ -40,14 +40,14 @@ const registerHandlers = (io, socket) => {
 
     // Handle joining room
     socket.on('join', ({ roomId, username }) => {
-        if (!ensureAuth({event: 'join', roomId, username})) return;
+        if (!ensureAuth({ event: 'join', roomId, username })) return;
         tracer.startActiveSpan("join", (span) => {
             try {
                 span.setAttribute("socket.id", socket.id);
                 span.setAttribute("username", username);
                 span.setAttribute("roomId", roomId);
                 logger.info('Joining room', {
-                    event:'join',
+                    event: 'join',
                     roomId,
                     username,
                     socketId: socket.id
@@ -60,7 +60,7 @@ const registerHandlers = (io, socket) => {
                     socket.emit('error', { message: roomValidation.error });
                     span.setStatus({ code: SpanStatusCode.ERROR, message: roomValidation.error });
                     logger.error('Joining room', {
-                        event:'join',
+                        event: 'join',
                         roomId,
                         username,
                         socketId: socket.id,
@@ -73,7 +73,7 @@ const registerHandlers = (io, socket) => {
                     socket.emit('error', { message: usernameValidation.error });
                     span.setStatus({ code: SpanStatusCode.ERROR, message: usernameValidation.error });
                     logger.error('Joining room', {
-                        event:'join',
+                        event: 'join',
                         roomId,
                         username,
                         socketId: socket.id,
@@ -90,7 +90,7 @@ const registerHandlers = (io, socket) => {
                     socket.emit('error', { message: 'Room is full (max 5 members)' });
                     span.setStatus({ code: SpanStatusCode.ERROR, message: 'Room is full' });
                     logger.error('Joining room', {
-                        event:'join',
+                        event: 'join',
                         roomId,
                         username,
                         socketId: socket.id,
@@ -116,7 +116,7 @@ const registerHandlers = (io, socket) => {
                 span.recordException(error);
                 span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
                 logger.error('Joining room', {
-                    event:'join',
+                    event: 'join',
                     roomId,
                     username,
                     socketId: socket.id,
@@ -132,11 +132,11 @@ const registerHandlers = (io, socket) => {
 
     // Handle code changes
     socket.on('code-change', ({ roomId, code, sender }) => {
-        if (!ensureAuth({event: 'code-change', roomId, sender})) return;
+        if (!ensureAuth({ event: 'code-change', roomId, sender })) return;
         tracer.startActiveSpan("code-change", (span) => {
             try {
-                logger.info('Code change',{
-                    event:'code-change',
+                logger.info('Code change', {
+                    event: 'code-change',
                     roomId,
                     sender,
                     socketId: socket.id
@@ -171,11 +171,11 @@ const registerHandlers = (io, socket) => {
 
     // Handle sync request
     socket.on('sync-code', ({ socketId, code }) => {
-        if (!ensureAuth({event: 'sync-code', targetSocketId: socketId})) return;
+        if (!ensureAuth({ event: 'sync-code', targetSocketId: socketId })) return;
         tracer.startActiveSpan("sync-code", (span) => {
             try {
-                logger.info('Sync code',{
-                    event:'sync-code',
+                logger.info('Sync code', {
+                    event: 'sync-code',
                     targetSocketId: socketId,
                     code,
                     socketId: socket.id
@@ -205,10 +205,10 @@ const registerHandlers = (io, socket) => {
         tracer.startActiveSpan("disconnecting", (span) => {
             try {
                 const username = userSocketMap.get(socket.id) || 'Anonymous';
-                logger.info('Disconnecting',{
-                    event:'disconnecting',
+                logger.info('Disconnecting', {
+                    event: 'disconnecting',
                     username,
-                    socketId:socket.id,
+                    socketId: socket.id,
                     rooms: [...socket.rooms]
                 })
                 span.setAttribute("socket.id", socket.id);
@@ -239,8 +239,8 @@ const registerHandlers = (io, socket) => {
     socket.on('disconnect', () => {
         tracer.startActiveSpan("disconnect", (span) => {
             try {
-                logger.info('Disconnect',{
-                    event:'disconnect',
+                logger.info('Disconnect', {
+                    event: 'disconnect',
                     socketId: socket.id
                 })
                 span.setAttribute("socket.id", socket.id);
@@ -263,11 +263,11 @@ const registerHandlers = (io, socket) => {
 
     // Handle leaving room
     socket.on('leave', ({ roomId }) => {
-        if (!ensureAuth({event: 'leave', roomId})) return;
+        if (!ensureAuth({ event: 'leave', roomId })) return;
         tracer.startActiveSpan("leave", (span) => {
             try {
-                logger.info('Leave',{
-                    event:'leave',
+                logger.info('Leave', {
+                    event: 'leave',
                     roomId,
                     socketId: socket.id
                 })
@@ -275,7 +275,7 @@ const registerHandlers = (io, socket) => {
                 span.setAttribute("socket.id", socket.id);
                 span.setAttribute("user.username", username);
                 span.setAttribute("room.id", roomId);
-                span.setAttribute("socket.id",socket.id)
+                span.setAttribute("socket.id", socket.id)
 
                 socket.leave(roomId);
                 const clients = getAllConnectedClients(io, roomId);
@@ -302,11 +302,11 @@ const registerHandlers = (io, socket) => {
 
     // Handle messages
     socket.on('send-message', ({ roomId, message, sender, time }) => {
-        if (!ensureAuth({event: 'send-message', roomId, sender})) return;
+        if (!ensureAuth({ event: 'send-message', roomId, sender })) return;
         tracer.startActiveSpan("send-message", (span) => {
             try {
-                logger.info('Send message',{
-                    event:'send-message',
+                logger.info('Send message', {
+                    event: 'send-message',
                     roomId,
                     message,
                     sender,
@@ -344,11 +344,12 @@ const registerHandlers = (io, socket) => {
 
     // Handle code execution output sync
     socket.on('code-output', ({ roomId, output, sender }) => {
-        if (!ensureAuth({event: 'code-output', roomId, sender})) return;
+        if (!ensureAuth({ event: 'code-output', roomId, sender })) return;
         tracer.startActiveSpan("code-output", (span) => {
             try {
-                logger.info("Code Output",{
-                    event:'code-output',
+                logger.debug("Code Output", {
+                    event: 'code-output',
+                    code,
                     roomId,
                     output,
                     sender

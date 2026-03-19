@@ -23,7 +23,7 @@ SyncEditor Server is a high-performance Node.js service providing the backbone f
 - ⚡ **Real-Time Sync**: Low-latency code and chat synchronization.
 - 🏢 **Room Management**: Secure, isolated collaborative environments.
 - 🛡️ **Production Security**: Rate limiting, XSS protection, and CSP headers.
-- 🔍 **First-Class Observability**: Distributed tracing with Jaeger v2.
+- 🔍 **First-Class Observability**: Distributed tracing with Jaeger v2 and log aggregation with Grafana/Loki.
 - 🧪 **Simple auth**: clients provide a username when joining; no backend login required.
 
 ---
@@ -31,7 +31,7 @@ SyncEditor Server is a high-performance Node.js service providing the backbone f
 ## Flow of the things how it's going on
 
 <div align="center">
-<img src="./assets//Screenshot 2026-03-14 at 3.06.44 PM.png" alt="System representation" width="900"/>
+<img src="./assets/Screenshot 2026-03-14 at 3.06.44 PM.png" alt="System representation" width="900"/>
 
 </div>
 
@@ -53,8 +53,19 @@ Visualize the entire lifecycle of collaborative events.
   <br><i>Real-time collaboration concurrency tracking.</i>
 </div>
 
-### 📝 Structured Logs
-Powered by `winston` and exported via OTLP for centralized log management.
+### 📝 Structured Logs & Aggregation
+Powered by `winston`, enriched with OpenTelemetry context, and aggregated via **Loki**.
+
+1.  **Enrichment**: Logs are automatically injected with `trace_id` and `span_id`.
+2.  **Scraping**: **Promtail** tails the JSON log files.
+3.  **Aggregation**: Logs are pushed to **Loki** for indexing.
+4.  **Visualization**: View and query logs in **Grafana**, with direct links to distributed traces.
+5.  **Insights**: Real-time log monitoring for rapid debugging.
+
+<div align="center">
+  <img src="./assets/Screenshot 2026-03-19 at 4.32.48 PM.png" alt="Loki Logs" width="900" />
+  <br><i>Centralized log aggregation in Grafana Loki.</i>
+</div>
 
 ---
 
@@ -64,7 +75,9 @@ Powered by `winston` and exported via OTLP for centralized log management.
 - **Framework**: [Express.js](https://expressjs.com/)
 - **Real-time**: [Socket.IO](https://socket.io/)
 - **Auth**: none (naive username-based)
-- **Jaeger**:  [Jaeger](https://www.jaegertracing.io/)
+- **Tracing**: [Jaeger](https://www.jaegertracing.io/)
+- **Log Aggregation**: [Loki](https://grafana.com/oss/loki/) & [Promtail](https://grafana.com/docs/loki/latest/clients/promtail/)
+- **Visualization**: [Grafana](https://grafana.com/)
 - **Observability**: [OpenTelemetry](https://opentelemetry.io/) 
 - **Logging**: [Winston](https://github.com/winstonjs/winston)
 
@@ -112,19 +125,46 @@ SOCKET_PING_INTERVAL=30000
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ Project Structure
 
 ```text
 Server/
 ├── src/
-│   ├── app.js          # Core Express application
-│   ├── index.js        # Entry point & OTel init
-│   ├── config/         # OTel & Middleware configs
-│   ├── middleware/     # Security & Validation
-│   ├── sockets/        # Socket.IO handlers
-│   └── utils/          # Logging & Helpers
-└── package.json
+│   ├── index.js             # Entry point: Starts server & initializes OTel
+│   ├── app.js               # Application setup: Middleware, routes, & error handling
+│   ├── config/              # Configuration files
+│   │   ├── otel.js          # OpenTelemetry SDK configuration
+│   │   └── clerk.js         # Authentication configuration (Clerk)
+│   ├── middleware/          # Express middleware
+│   │   ├── auth.js          # Authentication & user identification
+│   │   ├── rateLimiter.js   # Resource usage control
+│   │   └── validator.js     # Input schema validation
+│   ├── sockets/             # Socket.IO implementation
+│   │   ├── index.js         # Socket server initialization
+│   │   └── handlers.js      # Core logic for code sync, chat, & room management
+│   └── utils/               # Helper functions
+│       └── logger.js        # Winston structured logging setup
+├── otel-config/             # Observability infrastructure config
+│   ├── logging/             # Loki, Promtail, & Grafana setup
+│   └── otel/                # OTel Collector configurations
+├── k8s/                     # Kubernetes manifests
+│   ├── deployment.yaml      # App deployment & container spec
+│   ├── service.yaml         # LoadBalancer & port config
+│   └── hpa.yaml             # Horizontal Pod Autoscaler
+├── assets/                  # Documentation images & screenshots
+├── tests/                   # Integration & Unit test suites
+├── Dockerfile               # Production container definition
+└── package.json             # Dependencies & scripts
 ```
+
+---
+
+## 🛠️ Detailed Component Roles
+
+- **Socket Handlers**: The brain of the real-time engine, handling complex concurrency for code edits and ensuring all room participants stay in sync.
+- **OTel Infrastructure**: Provides the full observability pipeline, mapping application events to distributed traces for debugging production issues.
+- **K8s Manifests**: Production-ready configurations for deploying the server in a scalable Kubernetes environment with automated scaling.
+- **Security Middleware**: Multi-layered protection including rate limiting to prevent abuse and schema validation for all incoming socket/HTTP payloads.
 
 ---
 
@@ -134,7 +174,9 @@ Server/
 - **Headers**: Helmet-secured headers (XSS, HSTS, CSP).
 
 ## 🗺️ Roadmap
-- [ ] Distributed Metrics and Logging (Prometheus/Grafana)
+- [x] Tracing (Jaeger)  
+- [x] Centralized Log Aggregation (Loki/Grafana)
+- [ ] Distributed Metrics (Prometheus)
 - [ ] Health Dashboard UI
 - [ ] Custom Performance Spans
 

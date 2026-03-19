@@ -62,3 +62,4 @@ temp/
 K8s/
 
 # .github
+*.txt
