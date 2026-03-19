@@ -31,7 +31,7 @@ SyncEditor Server is a high-performance Node.js service providing the backbone f
 ## Flow of the things how it's going on
 
 <div align="center">
-<img src="./assets/Screenshot 2026-03-14 at 3.06.44 PM.png" alt="System representation" width="900"/>
+<img src="./assets/Screenshot 2026-03-19 at 5.51.02 PM.png" alt="System representation" width="900"/>
 
 </div>
 
