@@ -349,7 +349,6 @@ const registerHandlers = (io, socket) => {
             try {
                 logger.debug("Code Output", {
                     event: 'code-output',
-                    code,
                     roomId,
                     output,
                     sender

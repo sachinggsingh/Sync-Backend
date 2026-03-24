@@ -1,5 +1,5 @@
 const autocannon = require('autocannon');
-const { app, server } = require('../src/app');
+const { server } = require('../src/app');
 
 // Configuration
 const PORT = 5557; // Separate port for testing

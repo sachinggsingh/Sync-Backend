@@ -2,6 +2,7 @@ const { NodeSDK } = require("@opentelemetry/sdk-node")
 const { getNodeAutoInstrumentations } = require("@opentelemetry/auto-instrumentations-node")
 const { OTLPTraceExporter } = require("@opentelemetry/exporter-trace-otlp-http")
 const { AlwaysOnSampler } = require("@opentelemetry/sdk-trace-node")
+const { URL } = require('url');
 // Note: PeriodicExportingMetricReader and OTLPMetricExporter simplified for version compatibility
 // If metrics are required, ensure versions of sdk-node and sdk-metrics are compatible.
 
