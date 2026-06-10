@@ -1,0 +1,98 @@
+services:
+  frontend:
+    build:
+      context: ./synceditor
+      dockerfile: Dockerfile
+    image: sync-frontend
+    container_name: sync-frontend
+    env_file:
+      - ./synceditor/.env
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./Server
+      dockerfile: Dockerfile
+    image: sync-server
+    container_name: sync-server
+    env_file:
+      - ./Server/.env
+    environment:
+      # OTLP/HTTP exporter expects full signal paths
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318/v1/traces
+      - OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=http://otel-collector:4318/v1/logs
+      - LOG_DIR=/app/logs
+    ports:
+      - "5555:5555"
+    user: root
+    volumes:
+      - server-logs:/app/logs
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - otel-collector
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./Server/otel-config/otel/otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    ports:
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
+    depends_on:
+      - jaeger
+
+  jaeger:
+    image: jaegertracing/jaeger:latest
+    container_name: jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686" # UI
+
+  loki:
+    image: grafana/loki:2.9.6
+    container_name: loki
+    command: ["-config.file=/etc/loki/config.yaml"]
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./Server/otel-config/logging/loki/loki-config.yaml:/etc/loki/config.yaml:ro
+      - loki-data:/loki
+
+  promtail:
+    image: grafana/promtail:2.9.6
+    container_name: promtail
+    command: ["-config.file=/etc/promtail/config.yaml"]
+    volumes:
+      - ./Server/otel-config/logging/promtail/promtail-config.yaml:/etc/promtail/config.yaml:ro
+      - server-logs:/var/log/sync-server:ro
+    depends_on:
+      - loki
+      - backend
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./Server/otel-config/logging/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - loki
+
+volumes:
+  otel-collector-config:
+  jaeger-data:
+  server-logs:
+  loki-data:
+  grafana-data:
