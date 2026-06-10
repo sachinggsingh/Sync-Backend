@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sync-editor-server
+  labels:
+    app: sync-editor-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sync-editor-server
+  template:
+    metadata:
+      labels:
+        app: sync-editor-server
+    spec:
+      containers:
+      - name: sync-editor-server
+        image: sync-editor-server:latest
+        ports:
+        - containerPort: 5555
+        envFrom:
+        - secretRef:
+            name: sync-editor-secrets
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5555
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5555
+          initialDelaySeconds: 5
+          periodSeconds: 10

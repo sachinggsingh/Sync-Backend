@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sync-editor-server
+spec:
+  selector:
+    app: sync-editor-server
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5555
+  type: ClusterIP
